@@ -54,6 +54,10 @@ jobs:
             mkdir -p "$dest"
             cp -r schemas/* "$dest/"
           done
+      
+      - name: Copiar index.html
+        run: |
+          cp index.html docs/
 
       - name: Configurar GitHub Pages
         uses: actions/configure-pages@v5
