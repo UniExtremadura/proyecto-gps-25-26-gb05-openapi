@@ -986,7 +986,7 @@ paths:
       parameters:
         - name: id
           in: path
-          description: ID del usuario a devolver.
+          description: ID del usuario a actualizar.
           required: true
           schema:
             type: string
@@ -1035,28 +1035,132 @@ paths:
 # --------------------------------------------------------------------------
 # --------------------------------------------------------------------------
 # --------------------------------------------------------------------------
-#  /playlists:
-#    post:
-#      tags: 
-#        - playlists
-#      summary: Crear una nueva playlist.
-#      description: Devuelve la playlist creada por el usuario autenticado.
-#  /playlists/{id}:
-#    get:
-#      tags:
-#        - playlists
-#      summary: Obtener una playlist por su ID.
-#      description: Devuelve la información de la playlist solicitada.
-#    put:
-#      tags:
-#        - playlists
-#      summary: Actualizar una playlist existente.
-#      description: Devuelve la información actualizada de la playlist.
-#    delete:
-#      tags:
-#        - playlists
-#      summary: Eliminar una playlist por su ID.
-#      description: Devuelve si la playlist fue eliminada con éxito.
+  /playlists:
+    post:
+      tags: 
+        - playlists
+      summary: Crear una nueva playlist.
+      description: Devuelve la playlist creada por el usuario autenticado.
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              allOf:
+                - $ref: 'schemas/Playlist.yaml'
+      responses:
+        '201':
+          description: Playlist creada con éxito.
+          content:
+            application/json:
+              schema:
+                $ref: 'schemas/Playlist.yaml'
+        '400':
+          description: Información inválida o incompleta.
+          content:
+            application/json:
+              schema:
+                $ref: 'schemas/Error.yaml'
+        '401':
+          description: Usuario sin permiso para crear una playlist.
+          content:
+            application/json:
+              schema:
+                $ref: 'schemas/Error.yaml'
+        '500':
+          description: Error interno.
+          content:
+            application/json:
+              schema:
+                $ref: 'schemas/Error.yaml'
+
+  /playlists/{id}:
+    get:
+      tags:
+        - playlists
+      summary: Obtener una playlist por su ID.
+      description: Devuelve la información de la playlist solicitada.
+      parameters:
+        - name: id
+          in: path
+          description: ID de la playlist a devolver.
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Playlist obtenida con éxito.
+          content:
+            application/json:
+              schema:
+                $ref: 'schemas/Playlist.yaml'
+        '404':
+          description: 'Playlist no encontrada'
+        '500':
+          description: Error interno.
+          content:
+            application/json:
+              schema:
+                $ref: 'schemas/Error.yaml'
+
+    put:
+      tags:
+        - playlists
+      summary: Actualizar una playlist existente.
+      description: Devuelve la información actualizada de la playlist.
+      parameters:
+        - name: id
+          in: path
+          description: ID de la playlist a actualizar.
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Playlist actualizada con éxito.
+          content:
+            application/json:
+              schema:
+                $ref: 'schemas/Playlist.yaml'
+        '404':
+          description: 'Playlist no encontrada'
+        '500':
+          description: Error interno.
+          content:
+            application/json:
+              schema:
+                $ref: 'schemas/Error.yaml'
+
+    delete:
+      tags:
+        - playlists
+      summary: Eliminar una playlist por su ID.
+      description: Devuelve si la playlist fue eliminada con éxito.
+      parameters:
+        - name: id
+          in: path
+          description: ID de la playlist a eliminar.
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Playlist eliminada con éxito.
+          content:
+            application/json:
+              schema:
+                $ref: 'schemas/Playlist.yaml'
+        '404':
+          description: 'Playlist no encontrada'
+        '500':
+          description: Error interno.
+          content:
+            application/json:
+              schema:
+                $ref: 'schemas/Error.yaml'
       
 # --------------------------------------------------------------------------
 # --------------------------------------------------------------------------
@@ -1065,31 +1169,132 @@ paths:
 # --------------------------------------------------------------------------
 # --------------------------------------------------------------------------
 # --------------------------------------------------------------------------
-#  /products:
-#    post:
-#      tags:
-#        - products
-#      summary: Crear un producto.
-#      description: Devuelve el producto creado.
-#    
-#  /products/{id}:
-#    get:
-#      tags:
-#        - products
-#      summary: Buscar un producto por su ID.
-#      description: Devuelve el producto con el ID dado.
+  /products:
+    post:
+      tags:
+        - products
+      summary: Crear un producto.
+      description: Devuelve el producto creado.
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              allOf:
+                - $ref: 'schemas/Product.yaml'
+      responses:
+        '201':
+          description: Producto creado con éxito.
+          content:
+            application/json:
+              schema:
+                $ref: 'schemas/Product.yaml'
+        '400':
+          description: Información inválida o incompleta.
+          content:
+            application/json:
+              schema:
+                $ref: 'schemas/Error.yaml'
+        '401':
+          description: Usuario sin permiso para crear un producto.
+          content:
+            application/json:
+              schema:
+                $ref: 'schemas/Error.yaml'
+        '500':
+          description: Error interno.
+          content:
+            application/json:
+              schema:
+                $ref: 'schemas/Error.yaml'
     
-#    put: 
-#      tags:
-#        - products
-#      summary: Actualiza un producto dado el ID.
-#      description: Devuelve el producto actualizado con los nuevos datos.
-#      
-#    delete:
-#      tags:
-#        - products
-#      summary: Elimina un producto dado el ID.
-#      description: Devuelve si el producto ha sido eliminado con éxito.
+  /products/{id}:
+    get:
+      tags:
+        - products
+      summary: Buscar un producto por su ID.
+      description: Devuelve el producto con el ID dado.
+      parameters:
+        - name: id
+          in: path
+          description: ID del producto a devolver.
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Producto obtenido con éxito.
+          content:
+            application/json:
+              schema:
+                $ref: 'schemas/Product.yaml'
+        '404':
+          description: 'Producto no encontrada'
+        '500':
+          description: Error interno.
+          content:
+            application/json:
+              schema:
+                $ref: 'schemas/Error.yaml'
+
+    put: 
+      tags:
+        - products
+      summary: Actualiza un producto dado el ID.
+      description: Devuelve el producto actualizado con los nuevos datos.
+      parameters:
+        - name: id
+          in: path
+          description: ID del producto a actualizar.
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Producto actualizado con éxito.
+          content:
+            application/json:
+              schema:
+                $ref: 'schemas/Product.yaml'
+        '404':
+          description: 'Producto no encontrada'
+        '500':
+          description: Error interno.
+          content:
+            application/json:
+              schema:
+                $ref: 'schemas/Error.yaml'
+      
+    delete:
+      tags:
+        - products
+      summary: Elimina un producto dado el ID.
+      description: Devuelve si el producto ha sido eliminado con éxito.
+      parameters:
+        - name: id
+          in: path
+          description: ID del producto a eliminar.
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Producto eliminado con éxito.
+          content:
+            application/json:
+              schema:
+                $ref: 'schemas/Product.yaml'
+        '404':
+          description: 'Producto no encontrada'
+        '500':
+          description: Error interno.
+          content:
+            application/json:
+              schema:
+                $ref: 'schemas/Error.yaml'
   
 components:
   securitySchemes:
