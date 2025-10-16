@@ -1,0 +1,28 @@
+type: object
+properties:
+  id:
+    type: integer
+    format: int64
+    example: 10
+  username:
+    type: string
+    description: Nombre del comprador
+    example: "Bugs Bunny"
+  products:
+    type: array
+    items:
+      type: object
+      properties:
+        product:
+          $ref: '#/components/schemas/ProductSale'
+        quantity:
+          type: integer
+          format: int32
+          example: 2
+  saleDate:
+    type: string
+    format: date-time
+  totalPrice:
+    type: integer
+    format: int64
+    example: 100
