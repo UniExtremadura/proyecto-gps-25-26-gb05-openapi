@@ -875,7 +875,80 @@ paths:
             application/json:
               schema:
                 $ref: 'schemas/Error.yaml'
-        
+  
+  /artists/{id}/follow:
+    post:
+      tags:
+        - artists
+      summary: Seguir a artista.
+      description: Sigue al artista con el ID especificado.
+      operationId: followArtist
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: ID del artista a seguir.
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Artista seguido con éxito.
+        '401':
+          description: Usuario sin permiso para seguir al artista.
+          content:
+            application/json:
+              schema:
+                $ref: 'schemas/Error.yaml'
+        '404':
+          description: Artista no encontrado.
+        '409':
+          description: Artista ya seguido por el usuario.
+        '500':
+          description: Error interno.
+          content:
+            application/json:
+              schema:
+                $ref: 'schemas/Error.yaml'
+  
+  /artists/{id}/unfollow:
+    post:
+      tags:
+        - artists
+      summary: Dejar de seguir a artista.
+      description: Deja de seguir al artista con el ID especificado.
+      operationId: unfollowArtist
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: ID del artista a dejar de seguir.
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Artista dejado de seguir con éxito.
+        '401':
+          description: Usuario sin permiso para dejar de seguir al artista.
+          content:
+            application/json:
+              schema:
+                $ref: 'schemas/Error.yaml'
+        '404':
+          description: Artista no encontrado.
+        '409':
+          description: Artista no seguido por el usuario.
+        '500':
+          description: Error interno.
+          content:
+            application/json:
+              schema:
+                $ref: 'schemas/Error.yaml'
 # --------------------------------------------------------------------------
 # --------------------------------------------------------------------------
 # --------------------------------------------------------------------------
@@ -889,13 +962,16 @@ paths:
         - genres
       summary: Obtener géneros.
       description: Devuelve un listado con todos los géneros disponibles.
+      operationId: getGenres
       responses:
         '200':
           description: Géneros obtenidos con éxito.
           content:
             application/json:
               schema:
-                $ref: 'schemas/Genre.yaml'
+                type: array
+                items:
+                  $ref: 'schemas/Genre.yaml'
         '500':
           description: Error interno.
           content:
@@ -908,13 +984,15 @@ paths:
         - genres
       summary: Crear un género.
       description: Crea un género nuevo.
+      operationId: postGenre
+      security:
+        - bearerAuth: []
       requestBody:
         required: true
         content:
-          multipart/form-data:
+          application/json:
             schema:
-              allOf:
-                - $ref: 'schemas/Genre.yaml'
+              $ref: 'schemas/Genre.yaml'
       responses:
         '201':
           description: Género creado con éxito.
@@ -922,6 +1000,18 @@ paths:
             application/json:
               schema:
                 $ref: 'schemas/Genre.yaml'
+        '400':
+          description: Información inválida o incompleta.
+          content:
+            application/json:
+              schema:
+                $ref: 'schemas/Error.yaml'
+        '401':
+          description: Servicio sin permiso para crear un género.
+          content:
+            application/json:
+              schema:
+                $ref: 'schemas/Error.yaml'
         '500':
           description: Error interno.
           content:
@@ -935,6 +1025,7 @@ paths:
         - genres
       summary: Obtener un género por su ID.
       description: Devuelve el género con el ID dado.
+      operationId: getGenreById
       parameters:
         - name: id
           in: path
@@ -950,6 +1041,8 @@ paths:
             application/json:
               schema:
                 $ref: 'schemas/Genre.yaml'
+        '404':
+          description: Género no encontrado.
         '500':
           description: Error interno.
           content:
@@ -961,7 +1054,10 @@ paths:
       tags:
         - genres
       summary: Actualiza un género dado el ID.
-      description: Devuelve el género actualizado con los nuevos datos.
+      description: Devuelve la información actualizada del género.
+      operationId: putGenre
+      security:
+        - bearerAuth: []
       parameters:
         - name: id
           in: path
@@ -973,10 +1069,9 @@ paths:
       requestBody:
         required: true
         content:
-          multipart/form-data:
+          application/json:
             schema:
-              allOf:
-                - $ref: 'schemas/Genre.yaml'
+              $ref: 'schemas/Genre.yaml'
       responses:
         '200':
           description: Género actualizado con éxito.
@@ -984,6 +1079,20 @@ paths:
             application/json:
               schema:
                 $ref: 'schemas/Genre.yaml'
+        '400':
+          description: Información inválida o incompleta.
+          content:
+            application/json:
+              schema:
+                $ref: 'schemas/Error.yaml'
+        '401':
+          description: Servicio sin permiso para actualizar el género.
+          content:
+            application/json:
+              schema:
+                $ref: 'schemas/Error.yaml'
+        '404':
+          description: Género no encontrado.
         '500':
           description: Error interno.
           content:
@@ -996,6 +1105,9 @@ paths:
         - genres
       summary: Elimina un género dado el ID.
       description: Devuelve si el género ha sido eliminado con éxito.
+      operationId: deleteGenreById
+      security:
+        - bearerAuth: []
       parameters:
         - name: id
           in: path
@@ -1005,19 +1117,22 @@ paths:
             type: string
             format: uuid
       responses:
-        '203':
+        '200':
           description: Género eliminado con éxito.
+        '401':
+          description: Servicio sin permiso para eliminar el género.
           content:
             application/json:
               schema:
-                $ref: 'schemas/Genre.yaml'
+                $ref: 'schemas/Error.yaml'
+        '404':
+          description: Género no encontrado.
         '500':
           description: Error interno.
           content:
             application/json:
               schema:
                 $ref: 'schemas/Error.yaml'
-
 # --------------------------------------------------------------------------
 # --------------------------------------------------------------------------
 # --------------------------------------------------------------------------
