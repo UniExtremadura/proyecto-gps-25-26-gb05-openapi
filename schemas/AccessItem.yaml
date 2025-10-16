@@ -1,0 +1,15 @@
+type: object
+properties:
+  contentId:
+    type: integer
+    format: int64
+    example: 45
+  type:
+    type: string
+    enum:
+      - album
+      - track
+      - merchandising
+  title:
+    type: string
+    example: "Bad"
