@@ -24,6 +24,27 @@ jobs:
           output: docs/contenidos
           spec-file: servicio-contenidos.yaml
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Generar Servicio de Compras
+        uses: Legion2/swagger-ui-action@v1
+        with:
+          output: docs/compras
+          spec-file: servicio-compras.yaml
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Generar Servicio de Estadísticas
+        uses: Legion2/swagger-ui-action@v1
+        with:
+          output: docs/estadisticas
+          spec-file: servicio-estadisticas.yaml
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Generar Servicio de Usuarios
+        uses: Legion2/swagger-ui-action@v1
+        with:
+          output: docs/usuarios
+          spec-file: servicio-usuarios.yaml
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Configurar GitHub Pages
         uses: actions/configure-pages@v5
