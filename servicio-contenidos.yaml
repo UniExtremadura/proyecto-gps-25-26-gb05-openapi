@@ -1,0 +1,998 @@
+openapi: 3.0.1
+info:
+  title: UnderSounds - Servicio Contenidos
+  version: 1.0.0
+  description: |- 
+    Esta es la documentación que abarcará la información sobre la temática principal del software. Está basada en la especificación OpenAPI 3.0. Es la primera versión de la API, 
+servers:
+  - url: https://www.undersounds.com/api/v1/contenidos
+tags:
+  - name: songs
+    description: Toda la información sobre Canciones
+  
+  - name: albums
+    description: Toda la información sobre Álbumes
+  
+  - name: artists
+    description: Operaciones sobre artistas
+  
+  - name: genres
+    description: Operaciones sobre géneros
+  
+  - name: users
+    description: Información sobre Perfil público
+  
+  - name: products
+    description: Acciones sobre los pedidos de Productos físicos
+  
+  - name: playlists
+    description: Acciones sobre Listas de reproducción
+
+paths:
+# --------------------------------------------------------------------------
+# --------------------------------------------------------------------------
+# --------------------------------------------------------------------------
+# ------------------------------     SONGS    ------------------------------
+# --------------------------------------------------------------------------
+# --------------------------------------------------------------------------
+# --------------------------------------------------------------------------
+  /songs:
+    get:
+      tags:
+        - songs
+      summary: Obtener canciones.
+      description: Obtener un listado de canciones según los filtros especificados.
+      operationId: getSongs
+      parameters:
+        - name: name
+          in: query
+          description: Nombre parcial de la canción.
+          required: false
+          schema: 
+            type: string
+        - name: artistId
+          in: query
+          description: ID de artista.
+          required: false
+          schema:
+            type: string
+        - name: genres
+          in: query
+          description: ID de los géneros separados por comas.
+          required: false
+          schema:
+            type: string
+        - name: minPrice
+          in: query
+          description: Precio mínimo de la canción.
+          required: false
+          schema:
+            type: integer
+            format: int64
+        - name: maxPrice
+          in: query
+          description: Precio máximo de la canción.
+          required: false
+          schema:
+            type: integer
+            format: int64
+        - name: minReleaseDate
+          in: query
+          description: Fecha mínima de lanzamiento.
+          required: false
+          schema:
+            type: string
+            format: date-time
+        - name: maxReleaseDate
+          in: query
+          description: Fecha máxima de lanzamiento.
+          required: false
+          schema:
+            type: string
+            format: date-time
+        - name: formats
+          in: query
+          description: Formatos a filtrar separados por comas.
+          required: false
+          schema:
+            type: string
+            enum:
+            - digital
+            - vinyl
+            - cassette
+            - cd
+      responses:
+        '201':
+          description: Entidad encontrada con éxito.
+          content:
+            application/json:
+              schema:
+                $ref: 'schemas/Song.yaml'
+        '500':
+          description: Error interno.
+          content:
+            application/json:
+              schema:
+                $ref: 'schemas/Error.yaml'  
+
+    post:
+      tags:
+        - songs
+      summary: Crear una nueva canción.
+      description: Crear una nueva canción para el artista autenticado.
+      operationId: postSong
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              allOf:
+                - $ref: 'schemas/Song.yaml'
+                - type: object
+                  properties:
+                    file:
+                      type: string
+                      format: binary
+                    cover:
+                      type: string
+                      format: binary
+                  required:
+                    - file
+                    - cover
+      responses:
+        '201':
+          description: Entidad creada con éxito.
+          content:
+            application/json:
+              schema:
+                $ref: 'schemas/Song.yaml'
+        '400':
+          description: Información inválida o incompleta.
+          content:
+            application/json:
+              schema:
+                $ref: 'schemas/Error.yaml'
+        '401':
+          description: Usuario sin permiso para crear una canción.
+          content:
+            application/json:
+              schema:
+                $ref: 'schemas/Error.yaml'
+        '500':
+          description: Error interno.
+          content:
+            application/json:
+              schema:
+                $ref: 'schemas/Error.yaml'
+                
+  /songs/{id}:
+    get:
+      tags:
+        - songs
+      summary: Obtener una canción por su ID.
+      description: Devuelve la información de la canción solicitada.
+      operationId: getSongById
+      parameters:
+        - name: id
+          in: path
+          description: ID de la canción a devolver.
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Operación exitosa.
+          content:
+            application/json:
+              schema:
+                $ref: 'schemas/Song.yaml'
+        '401':
+          description: Usuario sin permiso para crear una canción.
+          content:
+            application/json:
+              schema:
+                $ref: 'schemas/Error.yaml'
+        '404':
+          description: ID de canción no encontrado.
+        '500':
+          description: Error interno.
+          content:
+            application/json:
+              schema:
+                $ref: 'schemas/Error.yaml'
+                
+    put:
+      tags:
+        - songs
+      summary: Actualizar una canción por su ID.
+      description: Devuelve la información de la canción actualizada.
+      operationId: updateSongById
+      parameters:
+        - name: id
+          in: path
+          description: ID de la canción a actualizar.
+          required: true
+          schema: 
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Operación exitosa.
+          content:
+            application/json:
+              schema:
+                $ref: 'schemas/Song.yaml'
+        '400':
+          description: Información inválida o incompleta.
+          content:
+            application/json:
+              schema:
+                $ref: 'schemas/Error.yaml'
+        '401':
+          description: Usuario sin permiso para actualizar la canción.
+          content:
+            application/json:
+              schema:
+                $ref: 'schemas/Error.yaml'
+        '404':
+          description: ID de canción no encontrado.
+        '500':
+          description: Error interno.
+          content:
+            application/json:
+              schema:
+                $ref: 'schemas/Error.yaml'
+                
+    delete:
+      tags:
+        - songs
+      summary: Eliminar una canción por su ID.
+      description: Devuelve si la canción ha sido eliminada con éxito.
+      operationId: deleteSongById
+      parameters:
+        - name: id
+          in: path
+          description: ID de la canción a eliminar.
+          required: true
+          schema: 
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Operación exitosa.
+          content:
+            application/json:
+              schema:
+                $ref: 'schemas/Song.yaml'
+        '401':
+          description: Usuario sin permiso para eliminar la canción.
+          content:
+            application/json:
+              schema:
+                $ref: 'schemas/Error.yaml'
+        '404':
+          description: ID de canción no encontrado.
+        '500':
+          description: Error interno.
+          content:
+            application/json:
+              schema:
+                $ref: 'schemas/Error.yaml'
+# --------------------------------------------------------------------------
+# --------------------------------------------------------------------------
+# --------------------------------------------------------------------------
+# ------------------------------    ALBUMS    ------------------------------
+# --------------------------------------------------------------------------
+# --------------------------------------------------------------------------
+# --------------------------------------------------------------------------
+  /albums:
+    get:
+      tags:
+        - albums
+      summary: Obtener álbumes.
+      description: Devuelve un listado de álbumes según los filtros especificados.
+      operationId: getAlbums
+      parameters:
+        - name: name
+          in: query
+          description: Nombre parcial del álbum.
+          required: false
+          schema: 
+            type: string
+        - name: artistId
+          in: query
+          description: ID de artista.
+          required: false
+          schema:
+            type: string
+        - name: genres
+          in: query
+          description: ID de los géneros separados por comas.
+          required: false
+          schema:
+            type: string
+        - name: minPrice
+          in: query
+          description: Precio mínimo del álbum.
+          required: false
+          schema:
+            type: integer
+            format: int64
+        - name: maxPrice
+          in: query
+          description: Precio máximo del álbum.
+          required: false
+          schema:
+            type: integer
+            format: int64
+        - name: minReleaseDate
+          in: query
+          description: Fecha mínima de lanzamiento.
+          required: false
+          schema:
+            type: string
+            format: date-time
+        - name: maxReleaseDate
+          in: query
+          description: Fecha máxima de lanzamiento.
+          required: false
+          schema:
+            type: string
+            format: date-time
+        - name: formats
+          in: query
+          description: Formatos a filtrar separados por comas.
+          required: false
+          schema:
+            type: string
+            enum:
+            - digital
+            - vinyl
+            - cassette
+            - cd
+      responses:
+        '200':
+          description: Entidad encontrada con éxito.
+          content:
+            application/json:
+              schema:
+                $ref: 'schemas/Album.yaml'
+        '500':
+          description: Error interno.
+          content:
+            application/json:
+              schema:
+                $ref: 'schemas/Error.yaml'
+        
+    post:
+      tags:
+        - albums
+      summary: Crear un nuevo álbum.
+      description: Devuelve la información del nuevo álbum creado.
+      operationId: postAlbum
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              allOf:
+                - $ref: 'schemas/Album.yaml'
+                - type: object
+                  properties:
+                    cover:
+                      type: string
+                      format: binary
+                  required:
+                    - cover
+      responses:
+        '201':
+          description: Álbum creado con éxito.
+          content:
+            application/json:
+              schema:
+                $ref: 'schemas/Album.yaml'
+        '500':
+          description: Error interno.
+          content:
+            application/json:
+              schema:
+                $ref: 'schemas/Error.yaml'
+
+
+      
+        
+
+  /albums/{id}:
+    get:
+      tags:
+        - albums
+      summary: Obtener un álbum por su ID.
+      description: Devuelve la información del álbum solicitado.
+      parameters:
+        - name: id
+          in: path
+          description: ID del álbum a devolver.
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Álbum encontrado.
+          content:
+            application/json:
+              schema:
+                $ref: 'schemas/Album.yaml'
+        '500':
+          description: Error interno.
+          content:
+            application/json:
+              schema:
+                $ref: 'schemas/Error.yaml'
+      
+    put:
+      tags:
+        - albums
+      summary: Actualizar un álbum existente.
+      description: Devuelve la información actualizada del álbum.
+      parameters:
+        - name: id
+          in: path
+          description: ID del álbum a actualizar.
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              allOf:
+                - $ref: 'schemas/Album.yaml'
+                - type: object
+                  properties:
+                    cover:
+                      type: string
+                      format: binary
+                  required:
+                    - cover
+      responses:
+        '201':
+          description: Álbum actualizado.
+          content:
+            application/json:
+              schema:
+                $ref: 'schemas/Album.yaml'
+        '500':
+          description: Error interno.
+          content:
+            application/json:
+              schema:
+                $ref: 'schemas/Error.yaml'
+      
+    delete:
+      tags:
+        - albums
+      summary: Eliminar un álbum por su ID.
+      description: Devuelve si el álbum fue eliminado con éxito.
+      parameters:
+        - name: id
+          in: path
+          description: ID del álbum a eliminar.
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: Álbum eliminado.
+        '500':
+          description: Error interno.
+          content:
+            application/json:
+              schema:
+                $ref: 'schemas/Error.yaml'
+# --------------------------------------------------------------------------
+# --------------------------------------------------------------------------
+# --------------------------------------------------------------------------
+# ------------------------------   ARTISTS    ------------------------------
+# --------------------------------------------------------------------------
+# --------------------------------------------------------------------------
+# --------------------------------------------------------------------------
+  /artists:
+    get:
+      tags:
+        - artists
+      summary: Obtener artistas.
+      description: Devuelve un listado de artistas según los filtros especificados.
+      parameters:
+        - name: name
+          in: query
+          description: Nombre parcial del artista.
+          required: false
+          schema: 
+            type: string
+        - name: id
+          in: query
+          description: ID de artista.
+          required: false
+          schema:
+            type: string
+        - name: genres
+          in: query
+          description: ID de los géneros separados por comas.
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Artistas encontrados.
+          content:
+            application/json:
+              schema:
+                $ref: 'schemas/Artist.yaml'
+        '500':
+          description: Error interno.
+          content:
+            application/json:
+              schema:
+                $ref: 'schemas/Error.yaml'
+      
+    post:
+      tags:
+        - artists
+      summary: Crear un nuevo artista.
+      description: Devuelve la información del nuevo artista creado.
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              allOf:
+                - $ref: 'schemas/Artist.yaml'
+      responses:
+        '201':
+          description: Artista creado con éxito.
+          content:
+            application/json:
+              schema:
+                $ref: 'schemas/Artist.yaml'
+        '500':
+          description: Error interno.
+          content:
+            application/json:
+              schema:
+                $ref: 'schemas/Error.yaml'
+
+  /artists/{id}:
+    get:
+      tags:
+        - artists
+      summary: Obtener un artista por su ID.
+      description: Devuelve la información del artista solicitado.
+      parameters:
+         - name: id
+           in: path
+           description: ID del artista a devolver.
+           required: true
+           schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Artista encontrado.
+          content:
+            application/json:
+              schema:
+                $ref: 'schemas/Artist.yaml'
+        '500':
+          description: Error interno.
+          content:
+            application/json:
+              schema:
+                $ref: 'schemas/Error.yaml'
+        
+    put:
+      tags:
+        - artists
+      summary: Actualizar un artista existente.
+      description: Devuelve la información actualizada del artista.
+      parameters:
+         - name: id
+           in: path
+           description: ID del artista a actualizar.
+           required: true
+           schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              allOf:
+                - $ref: 'schemas/Artist.yaml'
+      responses:
+        '201':
+          description: Artista actualizado con éxito.
+          content:
+            application/json:
+              schema:
+                $ref: 'schemas/Artist.yaml'
+        '500':
+          description: Error interno.
+          content:
+            application/json:
+              schema:
+                $ref: 'schemas/Error.yaml'
+        
+    delete:
+      tags:
+        - artists
+      summary: Eliminar un artista por su ID.
+      description: Devuelve si el artista fue eliminado con éxito.
+      parameters:
+         - name: id
+           in: path
+           description: ID del artista a eliminar.
+           required: true
+           schema:
+            type: string
+            format: uuid
+      responses:
+        '203':
+          description: Artista eliminado con éxito.
+        '500':
+          description: Error interno.
+          content:
+            application/json:
+              schema:
+                $ref: 'schemas/Error.yaml'
+        
+# --------------------------------------------------------------------------
+# --------------------------------------------------------------------------
+# --------------------------------------------------------------------------
+# ------------------------------   GENRES     ------------------------------
+# --------------------------------------------------------------------------
+# --------------------------------------------------------------------------
+# --------------------------------------------------------------------------
+  /genres:
+    get:
+      tags:
+        - genres
+      summary: Obtener géneros.
+      description: Devuelve un listado con todos los géneros disponibles.
+      responses:
+        '200':
+          description: Géneros obtenidos con éxito.
+          content:
+            application/json:
+              schema:
+                $ref: 'schemas/Genre.yaml'
+        '500':
+          description: Error interno.
+          content:
+            application/json:
+              schema:
+                $ref: 'schemas/Error.yaml'
+      
+    post:
+      tags:
+        - genres
+      summary: Crear un género.
+      description: Crea un género nuevo.
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              allOf:
+                - $ref: 'schemas/Genre.yaml'
+      responses:
+        '201':
+          description: Género creado con éxito.
+          content:
+            application/json:
+              schema:
+                $ref: 'schemas/Genre.yaml'
+        '500':
+          description: Error interno.
+          content:
+            application/json:
+              schema:
+                $ref: 'schemas/Error.yaml'
+      
+  /genres/{id}:
+    get:
+      tags:
+        - genres
+      summary: Obtener un género por su ID.
+      description: Devuelve el género con el ID dado.
+      parameters:
+        - name: id
+          in: path
+          description: ID del género a devolver.
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Género obtenido con éxito.
+          content:
+            application/json:
+              schema:
+                $ref: 'schemas/Genre.yaml'
+        '500':
+          description: Error interno.
+          content:
+            application/json:
+              schema:
+                $ref: 'schemas/Error.yaml'
+    
+    put: 
+      tags:
+        - genres
+      summary: Actualiza un género dado el ID.
+      description: Devuelve el género actualizado con los nuevos datos.
+      parameters:
+        - name: id
+          in: path
+          description: ID del género a actualizar.
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              allOf:
+                - $ref: 'schemas/Genre.yaml'
+      responses:
+        '200':
+          description: Género actualizado con éxito.
+          content:
+            application/json:
+              schema:
+                $ref: 'schemas/Genre.yaml'
+        '500':
+          description: Error interno.
+          content:
+            application/json:
+              schema:
+                $ref: 'schemas/Error.yaml'
+      
+    delete:
+      tags:
+        - genres
+      summary: Elimina un género dado el ID.
+      description: Devuelve si el género ha sido eliminado con éxito.
+      parameters:
+        - name: id
+          in: path
+          description: ID del género a eliminar.
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '203':
+          description: Género eliminado con éxito.
+          content:
+            application/json:
+              schema:
+                $ref: 'schemas/Genre.yaml'
+        '500':
+          description: Error interno.
+          content:
+            application/json:
+              schema:
+                $ref: 'schemas/Error.yaml'
+
+# --------------------------------------------------------------------------
+# --------------------------------------------------------------------------
+# --------------------------------------------------------------------------
+# ------------------------------    USERS     ------------------------------
+# --------------------------------------------------------------------------
+# --------------------------------------------------------------------------
+# --------------------------------------------------------------------------
+  /users:
+    get:
+      tags:
+        - users
+      summary: Obtener usuarios.
+      description: Devuelve un listado de usuarios según los filtros especificados.
+      responses:
+        '200':
+          description: Usuarios obtenidos con éxito.
+          content:
+            application/json:
+              schema:
+                $ref: 'schemas/Album.yaml'
+        '500':
+          description: Error interno.
+          content:
+            application/json:
+              schema:
+                $ref: 'schemas/Error.yaml'
+      
+    post:
+      tags:
+        - users
+      summary: Crear un nuevo perfil de usuario.
+      description: Devuelve la información del nuevo usuario creado.
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              allOf:
+                - $ref: 'schemas/Album.yaml'
+      responses:
+        '201':
+          description: Usuario creado con éxito.
+          content:
+            application/json:
+              schema:
+                $ref: 'schemas/Album.yaml'
+        '500':
+          description: Error interno.
+          content:
+            application/json:
+              schema:
+                $ref: 'schemas/Error.yaml'
+      
+  /users/{id}:
+    get:
+      tags:
+        - users
+      summary: Obtener un usuario por su ID.
+      description: Devuelve la información del usuario solicitado.
+      parameters:
+        - name: id
+          in: path
+          description: ID del usuario a devolver.
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Usuario obtenido con éxito.
+          content:
+            application/json:
+              schema:
+                $ref: 'schemas/Album.yaml'
+        '500':
+          description: Error interno.
+          content:
+            application/json:
+              schema:
+                $ref: 'schemas/Error.yaml'
+          
+    put:
+      tags:
+        - users
+      summary: Actualizar un usuario existente.
+      description: Devuelve la información actualizada del usuario.
+      parameters:
+        - name: id
+          in: path
+          description: ID del usuario a devolver.
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '201':
+          description: Usuario actualizado con éxito.
+          content:
+            application/json:
+              schema:
+                $ref: 'schemas/Album.yaml'
+        '500':
+          description: Error interno.
+          content:
+            application/json:
+              schema:
+                $ref: 'schemas/Error.yaml'
+      
+    delete:
+      tags:
+        - users
+      summary: Elimina un usuario dado el ID.
+      description: Devuelve si el usuario ha sido eliminado con éxito.
+      parameters:
+        - name: id
+          in: path
+          description: ID del usuario a eliminar.
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '203':
+          description: Usuario eliminado con éxito.
+        '500':
+          description: Error interno.
+          content:
+            application/json:
+              schema:
+                $ref: 'schemas/Error.yaml'
+
+# --------------------------------------------------------------------------
+# --------------------------------------------------------------------------
+# --------------------------------------------------------------------------
+# ------------------------------   PLAYLISTS  ------------------------------
+# --------------------------------------------------------------------------
+# --------------------------------------------------------------------------
+# --------------------------------------------------------------------------
+#  /playlists:
+#    post:
+#      tags: 
+#        - playlists
+#      summary: Crear una nueva playlist.
+#      description: Devuelve la playlist creada por el usuario autenticado.
+#  /playlists/{id}:
+#    get:
+#      tags:
+#        - playlists
+#      summary: Obtener una playlist por su ID.
+#      description: Devuelve la información de la playlist solicitada.
+#    put:
+#      tags:
+#        - playlists
+#      summary: Actualizar una playlist existente.
+#      description: Devuelve la información actualizada de la playlist.
+#    delete:
+#      tags:
+#        - playlists
+#      summary: Eliminar una playlist por su ID.
+#      description: Devuelve si la playlist fue eliminada con éxito.
+      
+# --------------------------------------------------------------------------
+# --------------------------------------------------------------------------
+# --------------------------------------------------------------------------
+# ------------------------------   PRODUCTS   ------------------------------
+# --------------------------------------------------------------------------
+# --------------------------------------------------------------------------
+# --------------------------------------------------------------------------
+#  /products:
+#    post:
+#      tags:
+#        - products
+#      summary: Crear un producto.
+#      description: Devuelve el producto creado.
+#    
+#  /products/{id}:
+#    get:
+#      tags:
+#        - products
+#      summary: Buscar un producto por su ID.
+#      description: Devuelve el producto con el ID dado.
+    
+#    put: 
+#      tags:
+#        - products
+#      summary: Actualiza un producto dado el ID.
+#      description: Devuelve el producto actualizado con los nuevos datos.
+#      
+#    delete:
+#      tags:
+#        - products
+#      summary: Elimina un producto dado el ID.
+#      description: Devuelve si el producto ha sido eliminado con éxito.
+  
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+        

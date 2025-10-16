@@ -1,0 +1,51 @@
+type: object
+required:
+  - title
+  - cover
+  - songs
+properties:
+  id:
+    type: string
+    format: uuid
+    example: 123e4567-e89b-12d3-a456-426614174000
+  title:
+    type: string
+    example: Nose
+  cover:
+    type: string
+    format: uri
+    example: https://www.undersounds.com/static/img/idj9h219w1ws.png
+  author:
+    $ref: 'Artist.yaml'
+  duration:
+    type: integer
+    format: int64
+    example: 3600
+  releaseDate:
+    type: string
+    format: date-time
+  songs:
+    type: array
+    items: 
+      $ref: 'Song.yaml'
+  pricing: 
+    type: object
+    required:
+      - digital
+    properties:
+      cd:
+        type: integer
+        format: int64
+        example: 700
+      vinyl:
+        type: integer
+        format: int64
+        example: 1200
+      cassette:
+        type: integer
+        format: int64
+        example: 900
+      digital:
+        type: integer
+        format: int64
+        example: 400

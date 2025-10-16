@@ -1,0 +1,35 @@
+type: object
+required:
+  - type
+  - name
+  - description
+  - price
+properties:
+  id:
+    type: string
+    format: uuid
+    example: 123e4567-e89b-12d3-a456-426614174000
+  type:
+    type: string
+    enum:
+      - tshirt
+      - hoodie
+      - cap
+      - poster
+      - totebag
+      - stickers
+      - mobilecase
+      - bracelet
+      - mug
+  name:
+    type: string
+    example: Camiseta
+  description:
+    type: string
+    example: Un 10% de la recaudación será destinado a XXX.
+  price:
+    type: integer
+    format: int64
+    example: 899
+  artist:
+    $ref: '#/components/schemas/Artist'

@@ -1,0 +1,28 @@
+type: object
+properties:
+  id:
+    type: string
+    format: uuid
+    example: 123e4567-e89b-12d3-a456-426614174000
+  title:
+    type: string
+    example: Lista para dormir
+  description:
+    type: string
+    example: La mejor música para irse a la cama, dormirás con las ovejitas.
+  author:
+    $ref: '#/components/schemas/Artist'
+  songs:
+    type: array
+    items:
+      $ref: '#/components/schemas/Song'
+  duration:
+    type: integer
+    format: int64
+    example: 1686
+  cover:
+    type: string
+    format: uri
+    example: https://www.undersounds.com/static/img/ishuv33i9w1ws.png
+  public:
+    type: boolean

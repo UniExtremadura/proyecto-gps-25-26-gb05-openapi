@@ -1,0 +1,11 @@
+type: object
+required:
+  - code
+  - message
+properties:
+  code:
+    type: string
+    example: ERR-1
+  message:
+    type: string
+    example: Error.

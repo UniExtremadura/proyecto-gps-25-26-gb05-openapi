@@ -1,0 +1,24 @@
+type: object
+required:
+  - artistName
+  - profileImg
+  - bannerImg
+properties:
+  id:
+    type: string
+    format: uuid
+    example: 123e4567-e89b-12d3-a456-426614174000
+  artistName:
+    type: string
+    example: Anuel AA
+  profileImg:
+    type: string
+    format: uri
+    example: https://www.undersounds.com/static/img/s921h9sh129j.png
+  bannerImg:
+    type: string
+    format: uri
+    example: https://www.undersounds.com/static/img/sdj0iqhi1bws1w.png
+  biography:
+    type: string
+    example: Anuel AA hizo que sus canciones se escucharan hasta en la luna.
