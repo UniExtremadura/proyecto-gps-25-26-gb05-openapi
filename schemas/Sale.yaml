@@ -14,7 +14,7 @@ properties:
       type: object
       properties:
         product:
-          $ref: '#/components/schemas/ProductSale'
+          $ref: 'ProductSale.yaml'
         quantity:
           type: integer
           format: int32

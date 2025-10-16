@@ -11,7 +11,7 @@ properties:
     type: string
     example: "Camiseta"
   artist:
-    $ref: '#/components/schemas/Artist'
+    $ref: 'Artist.yaml'
   photoUrls:
     type: array
     xml:
@@ -21,7 +21,7 @@ properties:
       xml:
         name: photoUrl
   album:
-    $ref: '#/components/schemas/Album'
+    $ref: 'Album.yaml'
   description:
     type: string
     example: "Camiseta de Michael Jackson"
