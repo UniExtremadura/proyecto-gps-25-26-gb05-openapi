@@ -1,0 +1,21 @@
+type: object
+properties:
+  id:
+    type: string
+    format: uuid
+    example: 123e4567-e89b-12d3-a456-426614174000
+  username:
+    type: string
+    example: PaniRompeMuros66
+  profileImg:
+    type: string
+    format: uri
+    example: https://www.undersounds.com/static/img/idj9h219w1ws.png
+  playlists:
+    type: array
+    items:
+      $ref: 'Playlist.yaml'
+  following:
+    type: array
+    items:
+      $ref: 'Artist.yaml'
