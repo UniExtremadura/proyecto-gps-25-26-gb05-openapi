@@ -11,11 +11,11 @@ properties:
     type: string
     example: La mejor música para irse a la cama, dormirás con las ovejitas.
   author:
-    $ref: '#/components/schemas/Artist'
+    $ref: 'PublicUser.yaml'
   songs:
     type: array
     items:
-      $ref: '#/components/schemas/Song'
+      $ref: 'Song.yaml'
   duration:
     type: integer
     format: int64

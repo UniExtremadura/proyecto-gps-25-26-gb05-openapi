@@ -31,5 +31,5 @@ properties:
     type: integer
     format: int64
     example: 899
-  artist:
-    $ref: '#/components/schemas/Artist'
+  author:
+    $ref: 'Artist.yaml'
