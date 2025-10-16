@@ -1,0 +1,667 @@
+openapi: 3.0.4
+info:
+  title: UnderSound's Statistics
+  description: |-
+    This is an example of how the statistics of UnderSounds would be managed
+  version: 1.0.12
+servers:
+  - url: https://petstore3.swagger.io/api/v3
+tags:
+  - name: song
+    description: Everything about the music
+  - name: user
+    description: Everything about the users
+  - name: artist
+    description: Everything about the artists
+paths:
+# --------------------------------------------------------------------------
+# ------------------------------    SONGS    -------------------------------
+# --------------------------------------------------------------------------
+  /song/top10Songs:
+    get:
+      tags:
+        - song
+      summary: Get top 10 songs by a specific filter.
+      description: Returns an array of 10 songs that have the most something, depending of the filter. The filter can be numViews, numFavourites and numSales
+      operationId: top10Songs
+      parameters:
+        - name: filter
+          in: query
+          description: Filter values to order the list of songs
+          required: true
+          explode: true
+          schema:
+            type: string
+            default: numViews
+            enum:
+              - numViews
+              - numFavourites
+              - numSales
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: 'schemas/Song.yaml'
+            application/xml:
+              schema:
+                type: array
+                items:
+                  $ref: 'schemas/Song.yaml'
+        '404':
+            description: Not found
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "schemas/Error.yaml"
+      security:
+        - bearerAuth: []
+  /song/top10Genres:
+    get:
+      tags:
+        - song
+      summary: Get top 10 genres by a specific filter.
+      description: Returns an array of 10 genres that have the most something, depending of the filter. The filter can be numViews, numFavourites and numSales
+      operationId: top10Genres
+      parameters:
+        - name: filter
+          in: query
+          description: Filter values to order the list of genres
+          required: true
+          explode: true
+          schema:
+            type: string
+            default: numViews
+            enum:
+              - numViews
+              - numFavourites
+              - numSales
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+            application/xml:
+              schema:
+                type: array
+                items:
+                  type: string
+        '404':
+            description: Not found
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "schemas/Error.yaml"
+      security:
+        - bearerAuth: []
+  /song/{songId}/numViews:
+    get:
+      tags:
+        - song
+      summary: Get the number of views of a song.
+      description: Returns the number of views a song has.
+      operationId: getSongViews
+      parameters:
+      - name: songId
+        in: path
+        description: ID of song to get the views from
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: integer
+            application/xml:
+              schema:
+                type: integer
+        '400':
+          description: Invalid ID supplied
+        '404':
+            description: Not found
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "schemas/Error.yaml"
+      security:
+        - bearerAuth: []
+  /song/{songId}/numFavourites:
+    get:
+      tags:
+        - song
+      summary: Get the number of favourites of a song.
+      description: Returns the number of favourites a song has.
+      operationId: getSongFavourites
+      parameters:
+      - name: songId
+        in: path
+        description: ID of song to get the favourites from
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: integer
+            application/xml:
+              schema:
+                type: integer
+        '400':
+          description: Invalid ID supplied
+        '404':
+            description: Not found
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "schemas/Error.yaml"
+      security:
+        - bearerAuth: []
+  /song/{songId}/numSales:
+    get:
+      tags:
+        - song
+      summary: Get the number of purchases of a song.
+      description: Returns the number of purchases a song has.
+      operationId: getSongSales
+      parameters:
+      - name: songId
+        in: path
+        description: ID of song to get the sells from
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: integer
+            application/xml:
+              schema:
+                type: integer
+        '400':
+          description: Invalid ID supplied
+        '404':
+            description: Not found
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "schemas/Error.yaml"
+      security:
+        - bearerAuth: []
+  /song/{songId}/genres:
+    get:
+      tags:
+        - song
+      summary: Get the genres of a song.
+      description: Returns the genres a song has.
+      operationId: getSongGenres
+      parameters:
+      - name: songId
+        in: path
+        description: ID of song to get the genres from
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+            application/xml:
+              schema:
+                type: array
+                items:
+                  type: string
+        '400':
+          description: Invalid ID supplied
+        '404':
+            description: Not found
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "schemas/Error.yaml"
+      security:
+        - bearerAuth: []
+# --------------------------------------------------------------------------
+# ------------------------------    USERS    -------------------------------
+# --------------------------------------------------------------------------
+  /user/filteredUsers:
+    get:
+      tags:
+        - user
+      summary: Get a list with all of the users ordered depending of a filter.
+      description: Returns an array of all the users in order of a filter. The filter can be timeRegistered, numPurchases and numFavourites
+      operationId: getUsersByFilter
+      parameters:
+        - name: filter
+          in: query
+          description: Filter values to order the list of users
+          required: true
+          explode: true
+          schema:
+            type: string
+            default: timeRegistered
+            enum:
+              - timeRegistered
+              - numPurchases
+              - numFavourites
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: 'schemas/User.yaml'
+            application/xml:
+              schema:
+                type: array
+                items:
+                  $ref: 'schemas/User.yaml'
+        '404':
+            description: Not found
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "schemas/Error.yaml"
+      security:
+        - bearerAuth: []
+  /user/{userId}/songByFilter:
+    get:
+      tags:
+        - user
+      summary: Find the song, influenced by a filter, depending of an user.
+      description: Returns a song that has the most something depending on a filter and on an user. The filter can be numViews, numFavourites and numSales
+      operationId: userSongByFilter
+      parameters:
+      - name: userId
+        in: path
+        description: ID of user to get the song from
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: filter
+        in: query
+        description: Filter to search the song by
+        required: true
+        schema:
+          type: string
+          default: numViews
+          enum:
+              - numViews
+              - numFavourites
+              - numSales
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: 'schemas/Song.yaml'
+            application/xml:
+              schema:
+                $ref: 'schemas/Song.yaml'
+        '400':
+          description: Invalid ID supplied
+        '404':
+            description: Not found
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "schemas/Error.yaml"
+      security:
+        - bearerAuth: []
+  /user/{userId}/timeRegistered:
+    get:
+      tags:
+        - user
+      summary: Get the amount of time the user has been registered.
+      description: Returns the amount of time the user has been registered.
+      operationId: getUserRegisteredTime
+      parameters:
+      - name: userId
+        in: path
+        description: ID of user to get the time from
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: integer
+            application/xml:
+              schema:
+                type: integer
+        '400':
+          description: Invalid ID supplied
+        '404':
+            description: Not found
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "schemas/Error.yaml"
+      security:
+        - bearerAuth: []
+  /user/{userId}/numSales:
+    get:
+      tags:
+        - user
+      summary: Get the amount of purchases the user has made.
+      description: Returns the amount of purchases the user has made.
+      operationId: getUserNumSales
+      parameters:
+      - name: userId
+        in: path
+        description: ID of user to get the purchases from
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: integer
+            application/xml:
+              schema:
+                type: integer
+        '400':
+          description: Invalid ID supplied
+        '404':
+            description: Not found
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "schemas/Error.yaml"
+      security:
+        - bearerAuth: []
+  /user/{userId}/numFavourites:
+    get:
+      tags:
+        - user
+      summary: Get the amount of favourites the user has.
+      description: Returns the amount of favourites the user has.
+      operationId: getUserNumFavourites
+      parameters:
+      - name: userId
+        in: path
+        description: ID of user to get the favourites from
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: integer
+            application/xml:
+              schema:
+                type: integer
+        '400':
+          description: Invalid ID supplied
+        '404':
+            description: Not found
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "schemas/Error.yaml"
+      security:
+        - bearerAuth: []
+# --------------------------------------------------------------------------
+# ------------------------------    ARTISTS    -----------------------------
+# --------------------------------------------------------------------------
+  /artist/artistsByFilter:
+    get:
+      tags:
+        - artist
+      summary: Get a list with all of the artist ordered depending of a filter.
+      description: Returns an array of all the artist in order of the filter. The filter could be  numSales, numProducts, totalViews and numFollowers
+      operationId: getArtistsByFilter
+      parameters:
+        - name: filter
+          in: query
+          description: Filter values to order the list of artists
+          required: true
+          explode: true
+          schema:
+            type: string
+            default: numSales
+            enum:
+              - numSales
+              - numProducts
+              - totalViews
+              - numFollowers
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: 'schemas/Artist.yaml'
+            application/xml:
+              schema:
+                type: array
+                items:
+                  $ref: 'schemas/Artist.yaml'
+        '404':
+            description: Not found
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "schemas/Error.yaml"
+      security:
+        - bearerAuth: []
+  /artist/{artistId}/numSales:
+    get:
+      tags:
+        - artist
+      summary: Get the number of sales of an artist.
+      description: Returns the number of sales an artist has.
+      operationId: getArtistNumSales
+      parameters:
+      - name: artistId
+        in: path
+        description: ID of song to get the sales from
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: integer
+            application/xml:
+              schema:
+                type: integer
+        '400':
+          description: Invalid ID supplied
+        '404':
+            description: Not found
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "schemas/Error.yaml"
+      security:
+        - bearerAuth: []
+  /artist/{artistId}/numProducts:
+    get:
+      tags:
+        - artist
+      summary: Get the number of products of an artist.
+      description: Returns the number of products an artist has.
+      operationId: getArtistNumProducts
+      parameters:
+      - name: artistId
+        in: path
+        description: ID of song to get the products from
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: integer
+            application/xml:
+              schema:
+                type: integer
+        '400':
+          description: Invalid ID supplied
+        '404':
+            description: Not found
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "schemas/Error.yaml"
+      security:
+        - bearerAuth: []
+  /artist/{artistId}/totalViews:
+    get:
+      tags:
+        - artist
+      summary: Get the number of views of an artist.
+      description: Returns the number of views an artist has.
+      operationId: getArtistViews
+      parameters:
+      - name: artistId
+        in: path
+        description: ID of song to get the views from
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: integer
+            application/xml:
+              schema:
+                type: integer
+        '400':
+          description: Invalid ID supplied
+        '404':
+            description: Not found
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "schemas/Error.yaml"
+      security:
+        - bearerAuth: []
+  /artist/{artistId}/numFollowers:
+    get:
+      tags:
+        - artist
+      summary: Get the number of followers of an artist.
+      description: Returns the number of followers an artist has.
+      operationId: getArtistNumFollowers
+      parameters:
+      - name: artistId
+        in: path
+        description: ID of song to get the followers from
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: integer
+            application/xml:
+              schema:
+                type: integer
+        '400':
+          description: Invalid ID supplied
+        '404':
+            description: Not found
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "schemas/Error.yaml"
+      security:
+        - bearerAuth: []
+components:
+  securitySchemes:
+    api_key:
+      type: apiKey
+      name: api_key
+      in: header
