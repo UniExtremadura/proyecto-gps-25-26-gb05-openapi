@@ -3,15 +3,15 @@ info:
   title: UnderSounds - Servicio Contenidos
   version: 1.0.0
   description: |- 
-    Esta es la documentación que abarcará la información sobre la temática principal del software. Está basada en la especificación OpenAPI 3.0. Es la primera versión de la API, 
+    Especificación OpenAPI para el servicio de contenidos de UnderSounds.
 servers:
   - url: https://www.undersounds.com/api/v1/contenidos
 tags:
   - name: songs
-    description: Toda la información sobre Canciones
+    description: Operaciones sobre canciones
   
   - name: albums
-    description: Toda la información sobre Álbumes
+    description: Operaciones sobre álbumes
   
   - name: artists
     description: Operaciones sobre artistas
@@ -20,13 +20,13 @@ tags:
     description: Operaciones sobre géneros
   
   - name: users
-    description: Información sobre Perfil público
+    description: Operaciones sobre el perfil público de usuarios
   
   - name: products
-    description: Acciones sobre los pedidos de Productos físicos
+    description: Operaciones sobre productos de merchandising
   
   - name: playlists
-    description: Acciones sobre Listas de reproducción
+    description: Operaciones sobre listas de reproducción
 
 paths:
 # --------------------------------------------------------------------------
@@ -90,24 +90,29 @@ paths:
           schema:
             type: string
             format: date-time
-        - name: formats
+        - name: page
           in: query
-          description: Formatos a filtrar separados por comas.
+          description: Número de página (por defecto, 1).
           required: false
           schema:
-            type: string
-            enum:
-            - digital
-            - vinyl
-            - cassette
-            - cd
+            type: integer
+            format: int64
+        - name: items
+          in: query
+          description: Número de elementos por página (por defecto, 20; máximo 100).
+          required: false
+          schema:
+            type: integer
+            format: int64
       responses:
         '201':
-          description: Entidad encontrada con éxito.
+          description: Petición ejecutada con éxito.
           content:
             application/json:
               schema:
-                $ref: 'schemas/Song.yaml'
+                type: array
+                items:
+                  $ref: 'schemas/Song.yaml'
         '500':
           description: Error interno.
           content:
@@ -143,7 +148,7 @@ paths:
                     - cover
       responses:
         '201':
-          description: Entidad creada con éxito.
+          description: Canción creada con éxito.
           content:
             application/json:
               schema:
@@ -184,32 +189,28 @@ paths:
             format: uuid
       responses:
         '200':
-          description: Operación exitosa.
+          description: Canción recuperada con éxito.
           content:
             application/json:
               schema:
                 $ref: 'schemas/Song.yaml'
-        '401':
-          description: Usuario sin permiso para crear una canción.
-          content:
-            application/json:
-              schema:
-                $ref: 'schemas/Error.yaml'
         '404':
-          description: ID de canción no encontrado.
+          description: Canción no encontrada.
         '500':
           description: Error interno.
           content:
             application/json:
               schema:
                 $ref: 'schemas/Error.yaml'
-                
+
     put:
       tags:
         - songs
       summary: Actualizar una canción por su ID.
-      description: Devuelve la información de la canción actualizada.
+      description: Devuelve la información actualizada de la canción.
       operationId: updateSongById
+      security:
+        - bearerAuth: []
       parameters:
         - name: id
           in: path
@@ -220,7 +221,7 @@ paths:
             format: uuid
       responses:
         '200':
-          description: Operación exitosa.
+          description: Canción actualizada con éxito.
           content:
             application/json:
               schema:
@@ -238,7 +239,7 @@ paths:
               schema:
                 $ref: 'schemas/Error.yaml'
         '404':
-          description: ID de canción no encontrado.
+          description: Canción no encontrada.
         '500':
           description: Error interno.
           content:
@@ -262,11 +263,7 @@ paths:
             format: uuid
       responses:
         '200':
-          description: Operación exitosa.
-          content:
-            application/json:
-              schema:
-                $ref: 'schemas/Song.yaml'
+          description: Canción eliminada con éxito.
         '401':
           description: Usuario sin permiso para eliminar la canción.
           content:
@@ -274,13 +271,118 @@ paths:
               schema:
                 $ref: 'schemas/Error.yaml'
         '404':
-          description: ID de canción no encontrado.
+          description: Canción no encontrada.
         '500':
           description: Error interno.
           content:
             application/json:
               schema:
                 $ref: 'schemas/Error.yaml'
+
+  /songs/{id}/play:
+    get:
+      tags:
+        - songs
+      summary: Reproducir una canción por su ID.
+      description: Devuelve la canción en formato de stream para ser reproducida en la plataforma.
+      operationId: playSongById
+      parameters:
+        - name: id
+          in: path
+          description: ID de la canción a reproducir.
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Canción encontrada con éxito.
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+        '401':
+          description: Usuario sin permiso para reproducir la canción.
+          content:
+            application/json:
+              schema:
+                $ref: 'schemas/Error.yaml'
+        '404':
+          description: Canción no encontrada.
+        '500':
+          description: Error interno.
+          content:
+            application/json:
+              schema:
+                $ref: 'schemas/Error.yaml'
+
+  /songs/{id}/download:
+    get:
+      tags:
+        - songs
+      summary: Descargar una canción por su ID.
+      description: Devuelve el fichero de canción en el formato deseado.
+      operationId: downloadSongById
+      parameters:
+        - name: id
+          in: path
+          description: ID de la canción a descargar.
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: format
+          in: query
+          description: Formato del fichero de la canción.
+          required: true
+          schema:
+            type: string
+            enum:
+              - mp3
+              - wav
+              - flac
+        - name: bitrate
+          in: query
+          description: En caso de seleccionar audio en MP3, bitrate del fichero de la canción.
+          required: false
+          schema:
+            type: string
+            enum:
+              - 192
+              - 320
+
+      responses:
+        '200':
+          description: Canción encontrada con éxito.
+          content:
+            audio/mpeg:
+              schema:
+                type: string
+                format: binary
+            audio/wav:
+              schema:
+                type: string
+                format: binary
+            audio/flac:
+              schema:
+                type: string
+                format: binary
+        '401':
+          description: Usuario sin permiso para descargar la canción.
+          content:
+            application/json:
+              schema:
+                $ref: 'schemas/Error.yaml'
+        '404':
+          description: Canción no encontrada.
+        '500':
+          description: Error interno.
+          content:
+            application/json:
+              schema:
+                $ref: 'schemas/Error.yaml'
+
 # --------------------------------------------------------------------------
 # --------------------------------------------------------------------------
 # --------------------------------------------------------------------------

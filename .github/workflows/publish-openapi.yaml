@@ -45,6 +45,15 @@ jobs:
           output: docs/usuarios
           spec-file: servicio-usuarios.yaml
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Copiar esquemas a cada servicio
+        run: |
+          services="contenidos compras estadisticas usuarios"
+          for s in $services; do
+            dest="docs/$s/schemas"
+            mkdir -p "$dest"
+            cp -r schemas/* "$dest/"
+          done
 
       - name: Configurar GitHub Pages
         uses: actions/configure-pages@v5
