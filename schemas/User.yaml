@@ -1,0 +1,37 @@
+type: object
+properties:
+    id:
+      type: integer
+      format: int64
+      example: 10
+    userId:
+      type: integer
+      format: int64
+      example: 198772
+    firstName:
+      type: string
+      description: User's First Name
+      example: John
+    lastName:
+      type: string
+      description: User's Last Name
+      example: Smith
+    username:
+      type: string
+      description: User's Public Name in the platform
+      example: theUser
+    email:
+      type: string
+      example: johnsmith@email.com
+    role:
+      type: string
+      description: Permits of the user
+      example: admin
+      enum:
+        - admin
+        - artist
+        - user
+    #array de direcciones de envio
+      
+xml:
+    name: user

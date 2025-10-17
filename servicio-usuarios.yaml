@@ -1,0 +1,414 @@
+openapi: 3.0.4
+info:
+  title: UnderSounds-Servicios-Usuarios - OpenAPI 3.0
+  description: |-
+    Definicion de la API del servicio de Usuarios para la plataforma desarrollada Undersounds perteneciente al proyecto de la asignatura Arquitecturas y Servicios Empresariales (ASEE) del Grado en Ingenieria Informatica de Software de la Universidad de Extremadura
+  termsOfService: https://swagger.io/terms/
+  contact:
+    email: dbarrantp@alumnos.unex.es
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+  version: 1.0.12
+tags: #Secciones de los métodos
+  - name: users
+    description: Operations on Users
+
+paths:
+  /users: #Una unica ruta para varios metodos
+    put:
+      tags:
+        - users
+      summary: Update an existing user
+      description: Use the userID to update an existent user.
+      operationId: updateUser
+      requestBody:
+        description: Update an existent user in the database
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+        required: true #Parametros obligatorios
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '400':
+          description: Invalid ID supplied
+        '404':
+          description: User Not Found
+        '422':
+          description: Validation exception
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    post:
+      tags:
+        - users
+      summary: Add a new user to the database
+      description: Add a new user to the database
+      operationId: addUser
+      requestBody:
+        description: Create a new user in the database
+        content:
+          application/json:
+            schema:
+                $ref: '#/components/schemas/User'
+        required: true
+      responses:
+        '200':
+            description: Successful operation
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/User'
+        '400':
+          description: Invalid ID supplied
+        '422':
+          description: Validation exception
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /users/{userId}:
+    get:
+      tags:
+        - users
+      summary: Returns all user info
+      description: Returns all the info of the user with specified Id
+      operationId: getUserById
+      parameters:
+        - name: userId
+          in: path
+          description: ID of the User to return
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '400':
+          description: Invalid ID
+        '404':
+          description: User not found
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    post:
+      tags:
+        - users
+      summary: Updates the content of an User with a specific ID
+      description: Given an ID and certain data, updates the already existing user with the given data
+      operationId: updateUserByID
+      parameters:
+        - name: userId
+          in: path
+          description: The ID of the specific user
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: name
+          in: query
+          description: User's first name that will be updated
+          schema:
+            type: string
+        - name: firstName
+          in: query
+          description: User's First Name to be updated
+          schema:
+            type: string
+        - name: lastName
+          in: query
+          description: User's Last Name to be updated
+          schema:
+            type: string
+        - name: username
+          in: query
+          description: User's public username that will be updated
+          schema:
+            type: string
+        - name: email
+          in: query
+          description: User's email that will be updated
+          schema:
+            type: string
+        - name: address
+          in: query
+          schema: 
+            $ref: '#/components/schemas/Address'
+            
+      responses:
+        '200':
+            description: successful operation
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/User'
+        '400':
+          description: Invalid input
+        '422':
+          description: Validation exception
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+    delete:
+      tags:
+        - users
+      summary: Delete an user depending on the specified ID
+      description: Deletes the user
+      operationId: deleteUser
+      parameters:
+        - name: userId
+          in: path
+          description: user's Id to be deleted
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: User deleted
+        '400':
+          description: Invalid User Id
+        '404':
+          description: User not found
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /users/{username}:
+    get:
+      tags:
+        - users
+      summary: Returns all user info
+      description: Returns all the info of the user with specified username
+      operationId: getUserByUsername
+      parameters:
+        - name: username
+          in: path
+          description: User's username
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '400':
+          description: Invalid username
+        '404':
+          description: User not found
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    post:
+      tags:
+        - users
+      summary: Updates the content of an User with a specific username
+      description: Given a username and certain data, updates the already existing user with the given data
+      operationId: updateUserByUsername
+      parameters:
+        - name: userId
+          in: query
+          description: The ID of the specific user
+          required: false
+          schema:
+            type: integer
+            format: int64
+        - name: name
+          in: query
+          description: User's first name that will be updated
+          schema:
+            type: string
+        - name: firstName
+          in: query
+          description: User's First Name to be updated
+          schema:
+            type: string
+        - name: lastName
+          in: query
+          description: User's Last Name to be updated
+          schema:
+            type: string
+        - name: username
+          in: path
+          description: User's public username that will be updated
+          schema:
+            type: string
+          required: true
+        - name: email
+          in: query
+          description: User's email that will be updated
+          schema:
+            type: string
+        - name: address
+          in: query
+          schema:
+              $ref: '#/components/schemas/Address'
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '400':
+          description: Invalid input
+        '422':
+          description: Validation exception
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              
+              
+    delete:
+      tags:
+        - users
+      summary: Delete an user depending on the specified username
+      description: Deletes the user
+      operationId: deleteUserByUsername
+      parameters:
+        - name: username
+          in: path
+          description: user's username to be deleted
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: User deleted
+        '400':
+          description: Invalid username
+        '404':
+          description: User not found
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /users/login:
+    get:
+      tags:
+        - users
+      summary: Logs the user into the system
+      description: Logs the user into the system
+      operationId: loginUser
+      parameters:
+        - name: username
+          in: query
+          description: username to log in
+          schema:
+            type: string
+        - name: password
+          in: query
+          description: user's password.
+          schema:
+            type: string
+      responses:
+        '200':
+          description: successful operation
+        '400':
+          description: Invalid username/password
+      
+                
+  
+
+components:
+  schemas:
+    User:
+      type: object
+      properties:
+          id:
+            type: integer
+            format: int64
+            example: 10
+          userId:
+            type: integer
+            format: int64
+            example: 198772
+          firstName:
+            type: string
+            description: User's First Name
+            example: John
+          lastName:
+            type: string
+            description: User's Last Name
+            example: Smith
+          username:
+            type: string
+            description: User's Public Name in the platform
+            example: theUser
+          email:
+            type: string
+            example: johnsmith@email.com
+          role:
+            type: string
+            description: Permits of the user
+            example: admin
+            enum:
+              - admin
+              - artist
+              - user
+          #array de direcciones de envio
+            
+      xml:
+          name: user
+    Address:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Full address name
+          example: Fifth Avenue
+        otherData:
+          type: string
+          description: extra data needed (number, door...)
+          example: 36, 1A
+        postalCode:
+          type: integer
+          format: int64
+      xml:
+        name: address
+    
+    Error:
+      type: object
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+      required:
+        - code
+        - message
