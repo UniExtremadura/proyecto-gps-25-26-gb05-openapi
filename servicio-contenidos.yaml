@@ -841,7 +841,6 @@ paths:
             application/json:
               schema:
                 $ref: 'schemas/Error.yaml'
-# TODO QUEDA HACER EL FOLLOW Y UNFOLLOW DE ARTISTAS        
     delete:
       tags:
         - artists
@@ -1024,7 +1023,7 @@ paths:
       tags:
         - genres
       summary: Obtener un género por su ID.
-      description: Devuelve el género con el ID dado.
+      description: Devuelve la información del género solicitado.
       operationId: getGenreById
       parameters:
         - name: id
@@ -1055,7 +1054,7 @@ paths:
         - genres
       summary: Actualiza un género dado el ID.
       description: Devuelve la información actualizada del género.
-      operationId: putGenre
+      operationId: updateGenreById
       security:
         - bearerAuth: []
       parameters:
@@ -1103,7 +1102,7 @@ paths:
     delete:
       tags:
         - genres
-      summary: Elimina un género dado el ID.
+      summary: Elimina un género por su ID.
       description: Devuelve si el género ha sido eliminado con éxito.
       operationId: deleteGenreById
       security:
@@ -1140,45 +1139,40 @@ paths:
 # --------------------------------------------------------------------------
 # --------------------------------------------------------------------------
 # --------------------------------------------------------------------------
-  /users:
-    get:
-      tags:
-        - users
-      summary: Obtener usuarios.
-      description: Devuelve un listado de usuarios según los filtros especificados.
-      responses:
-        '200':
-          description: Usuarios obtenidos con éxito.
-          content:
-            application/json:
-              schema:
-                $ref: 'schemas/Album.yaml'
-        '500':
-          description: Error interno.
-          content:
-            application/json:
-              schema:
-                $ref: 'schemas/Error.yaml'
-      
+  /users:      
     post:
       tags:
         - users
       summary: Crear un nuevo perfil de usuario.
-      description: Devuelve la información del nuevo usuario creado.
+      description: Crea un nuevo perfil de usuario.
+      operationId: postUserProfile
+      security:
+        - bearerAuth: []
       requestBody:
         required: true
         content:
-          multipart/form-data:
+          application/json:
             schema:
-              allOf:
-                - $ref: 'schemas/Album.yaml'
+              $ref: 'schemas/UserProfile.yaml'
       responses:
         '201':
-          description: Usuario creado con éxito.
+          description: Perfil de usuario creado con éxito.
           content:
             application/json:
               schema:
-                $ref: 'schemas/Album.yaml'
+                $ref: 'schemas/UserProfile.yaml'
+        '400':
+          description: Información inválida o incompleta.
+          content:
+            application/json:
+              schema:
+                $ref: 'schemas/Error.yaml'
+        '401':
+          description: Servicio sin permiso para crear una canción.
+          content:
+            application/json:
+              schema:
+                $ref: 'schemas/Error.yaml'
         '500':
           description: Error interno.
           content:
@@ -1190,23 +1184,26 @@ paths:
     get:
       tags:
         - users
-      summary: Obtener un usuario por su ID.
-      description: Devuelve la información del usuario solicitado.
+      summary: Obtener un perfil de usuario por su ID.
+      description: Devuelve la información del perfil de usuario solicitado.
+      operationId: getUserProfileById
       parameters:
         - name: id
           in: path
-          description: ID del usuario a devolver.
+          description: ID del perfil de usuario a devolver.
           required: true
           schema:
             type: string
             format: uuid
       responses:
         '200':
-          description: Usuario obtenido con éxito.
+          description: Perfil de usuario obtenido con éxito.
           content:
             application/json:
               schema:
-                $ref: 'schemas/Album.yaml'
+                $ref: 'schemas/UserProfile.yaml'
+        '404':
+          description: Perfil de usuario no encontrado.
         '500':
           description: Error interno.
           content:
@@ -1217,53 +1214,91 @@ paths:
     put:
       tags:
         - users
-      summary: Actualizar un usuario existente.
-      description: Devuelve la información actualizada del usuario.
+      summary: Actualizar un perfil de usuario por su ID.
+      description: Devuelve la información actualizada del perfil de usuario.
+      operationId: updateUserProfileById
+      security:
+        - bearerAuth: []
       parameters:
         - name: id
           in: path
-          description: ID del usuario a actualizar.
+          description: ID del perfil de usuario a actualizar.
           required: true
           schema:
             type: string
             format: uuid
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              allOf:
+                - $ref: 'schemas/UserProfile.yaml'
+                - type: object
+                  properties:
+                    profileImg:
+                      type: string
+                      format: binary
       responses:
-        '201':
+        '200':
           description: Usuario actualizado con éxito.
           content:
             application/json:
               schema:
-                $ref: 'schemas/Album.yaml'
+                $ref: 'schemas/UserProfile.yaml'
+        '400':
+          description: Información inválida o incompleta.
+          content:
+            application/json:
+              schema:
+                $ref: 'schemas/Error.yaml'
+        '401':
+          description: Usuario sin permiso para actualizar el perfil de usuario.
+          content:
+            application/json:
+              schema:
+                $ref: 'schemas/Error.yaml'
+        '404':
+          description: Perfil de usuario no encontrado.
         '500':
           description: Error interno.
           content:
             application/json:
               schema:
                 $ref: 'schemas/Error.yaml'
-      
     delete:
       tags:
         - users
-      summary: Elimina un usuario dado el ID.
-      description: Devuelve si el usuario ha sido eliminado con éxito.
+      summary: Eliminar un perfil de usuario dado el ID.
+      description: Devuelve si el perfil de usuario ha sido eliminado con éxito.
+      operationId: deleteUserProfileById
+      security:
+        - bearerAuth: []
       parameters:
         - name: id
           in: path
-          description: ID del usuario a eliminar.
+          description: ID del perfil de usuario a eliminar.
           required: true
           schema:
             type: string
             format: uuid
       responses:
-        '203':
-          description: Usuario eliminado con éxito.
+        '200':
+          description: Perfil de usuario eliminado con éxito.
+        '401':
+          description: Usuario sin permiso para eliminar el perfil de usuario.
+          content:
+            application/json:
+              schema:
+                $ref: 'schemas/Error.yaml'
+        '404':
+          description: Perfil de usuario no encontrado.
         '500':
           description: Error interno.
           content:
             application/json:
               schema:
                 $ref: 'schemas/Error.yaml'
-
 # --------------------------------------------------------------------------
 # --------------------------------------------------------------------------
 # --------------------------------------------------------------------------
@@ -1277,13 +1312,15 @@ paths:
         - playlists
       summary: Crear una nueva playlist.
       description: Devuelve la playlist creada por el usuario autenticado.
+      operationId: postPlaylist
+      security:
+        - bearerAuth: []
       requestBody:
         required: true
         content:
-          multipart/form-data:
+          application/json:
             schema:
-              allOf:
-                - $ref: 'schemas/Playlist.yaml'
+              $ref: 'schemas/Playlist.yaml'
       responses:
         '201':
           description: Playlist creada con éxito.
@@ -1316,6 +1353,7 @@ paths:
         - playlists
       summary: Obtener una playlist por su ID.
       description: Devuelve la información de la playlist solicitada.
+      operationId: getPlaylistById
       parameters:
         - name: id
           in: path
@@ -1326,13 +1364,13 @@ paths:
             format: uuid
       responses:
         '200':
-          description: Playlist obtenida con éxito.
+          description: Playlist recuperada con éxito.
           content:
             application/json:
               schema:
                 $ref: 'schemas/Playlist.yaml'
         '404':
-          description: 'Playlist no encontrada'
+          description: Playlist no encontrada.
         '500':
           description: Error interno.
           content:
@@ -1343,8 +1381,11 @@ paths:
     put:
       tags:
         - playlists
-      summary: Actualizar una playlist existente.
+      summary: Actualizar una playlist por su ID.
       description: Devuelve la información actualizada de la playlist.
+      operationId: updatePlaylistById
+      security:
+        - bearerAuth: []
       parameters:
         - name: id
           in: path
@@ -1353,6 +1394,12 @@ paths:
           schema:
             type: string
             format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: 'schemas/Playlist.yaml'
       responses:
         '200':
           description: Playlist actualizada con éxito.
@@ -1360,6 +1407,18 @@ paths:
             application/json:
               schema:
                 $ref: 'schemas/Playlist.yaml'
+        '400':
+          description: Información inválida o incompleta.
+          content:
+            application/json:
+              schema:
+                $ref: 'schemas/Error.yaml'
+        '401':
+          description: Usuario sin permiso para actualizar la playlist.
+          content:
+            application/json:
+              schema:
+                $ref: 'schemas/Error.yaml'
         '404':
           description: 'Playlist no encontrada'
         '500':
@@ -1374,6 +1433,9 @@ paths:
         - playlists
       summary: Eliminar una playlist por su ID.
       description: Devuelve si la playlist fue eliminada con éxito.
+      operationId: deletePlaylistById
+      security:
+        - bearerAuth: []
       parameters:
         - name: id
           in: path
@@ -1385,10 +1447,12 @@ paths:
       responses:
         '200':
           description: Playlist eliminada con éxito.
+        '401':
+          description: Usuario sin permiso para eliminar la playlist.
           content:
             application/json:
               schema:
-                $ref: 'schemas/Playlist.yaml'
+                $ref: 'schemas/Error.yaml'
         '404':
           description: 'Playlist no encontrada'
         '500':
@@ -1397,7 +1461,6 @@ paths:
             application/json:
               schema:
                 $ref: 'schemas/Error.yaml'
-      
 # --------------------------------------------------------------------------
 # --------------------------------------------------------------------------
 # --------------------------------------------------------------------------
@@ -1406,18 +1469,63 @@ paths:
 # --------------------------------------------------------------------------
 # --------------------------------------------------------------------------
   /products:
+    get:
+      tags:
+        - products
+      summary: Obtener productos.
+      description: Devuelve un listado de productos según los filtros especificados.
+      operationId: getProducts
+      parameters:
+        - name: artistId
+          in: query
+          description: ID del artista.
+          required: false
+          schema:
+            type: string
+        - name: page
+          in: query
+          description: Número de página (por defecto, 1).
+          required: false
+          schema:
+            type: integer
+            format: int64
+        - name: items
+          in: query
+          description: Número de elementos por página (por defecto, 20; máximo 100).
+          required: false
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Productos obtenidos con éxito.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: 'schemas/Product.yaml'
+        '500':
+          description: Error interno.
+          content:
+            application/json:
+              schema:
+                $ref: 'schemas/Error.yaml'
+
     post:
       tags:
         - products
-      summary: Crear un producto.
-      description: Devuelve el producto creado.
+      summary: Crear un producto nuevo.
+      description: Crea un producto nuevo para el artista autenticado.
+      operationId: postProduct
+      security:
+        - bearerAuth: []
       requestBody:
         required: true
         content:
-          multipart/form-data:
+          application/json:
             schema:
-              allOf:
-                - $ref: 'schemas/Product.yaml'
+              $ref: 'schemas/Product.yaml'
       responses:
         '201':
           description: Producto creado con éxito.
@@ -1448,8 +1556,9 @@ paths:
     get:
       tags:
         - products
-      summary: Buscar un producto por su ID.
-      description: Devuelve el producto con el ID dado.
+      summary: Obtener un producto por su ID.
+      description: Devuelve la información del producto solicitado.
+      operationId: getProductById
       parameters:
         - name: id
           in: path
@@ -1460,13 +1569,13 @@ paths:
             format: uuid
       responses:
         '200':
-          description: Producto obtenido con éxito.
+          description: Producto recuperado con éxito.
           content:
             application/json:
               schema:
                 $ref: 'schemas/Product.yaml'
         '404':
-          description: 'Producto no encontrada'
+          description: Producto no encontrado
         '500':
           description: Error interno.
           content:
@@ -1477,8 +1586,11 @@ paths:
     put: 
       tags:
         - products
-      summary: Actualiza un producto dado el ID.
-      description: Devuelve el producto actualizado con los nuevos datos.
+      summary: Actualizar un producto por su ID.
+      description: Devuelve la información actualizada del producto.
+      operationId: updateProductById
+      security:
+        - bearerAuth: []
       parameters:
         - name: id
           in: path
@@ -1487,6 +1599,12 @@ paths:
           schema:
             type: string
             format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: 'schemas/Product.yaml'
       responses:
         '200':
           description: Producto actualizado con éxito.
@@ -1494,8 +1612,20 @@ paths:
             application/json:
               schema:
                 $ref: 'schemas/Product.yaml'
+        '400':
+          description: Información inválida o incompleta.
+          content:
+            application/json:
+              schema:
+                $ref: 'schemas/Error.yaml'
+        '401':
+          description: Usuario sin permiso para actualizar el producto.
+          content:
+            application/json:
+              schema:
+                $ref: 'schemas/Error.yaml'
         '404':
-          description: 'Producto no encontrada'
+          description: Producto no encontrado.
         '500':
           description: Error interno.
           content:
@@ -1506,8 +1636,11 @@ paths:
     delete:
       tags:
         - products
-      summary: Elimina un producto dado el ID.
+      summary: Elimina un producto por su ID.
       description: Devuelve si el producto ha sido eliminado con éxito.
+      operationId: deleteProductById
+      security:
+        - bearerAuth: []
       parameters:
         - name: id
           in: path
@@ -1519,12 +1652,14 @@ paths:
       responses:
         '200':
           description: Producto eliminado con éxito.
+        '401':
+          description: Usuario sin permiso para eliminar el producto.
           content:
             application/json:
               schema:
-                $ref: 'schemas/Product.yaml'
+                $ref: 'schemas/Error.yaml'
         '404':
-          description: 'Producto no encontrada'
+          description: Producto no encontrado.
         '500':
           description: Error interno.
           content:

@@ -11,7 +11,7 @@ properties:
     type: string
     example: La mejor música para irse a la cama, dormirás con las ovejitas.
   author:
-    $ref: 'PublicUser.yaml'
+    $ref: 'UserProfile.yaml'
   songs:
     type: array
     items:

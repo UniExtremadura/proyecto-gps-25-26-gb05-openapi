@@ -33,3 +33,8 @@ properties:
     example: 899
   author:
     $ref: 'Artist.yaml'
+  previewImgs:
+    type: array
+    items:
+      type: string
+      format: uri
