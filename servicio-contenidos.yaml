@@ -1,4 +1,4 @@
-openapi: 3.0.1
+openapi: 3.0.4
 info:
   title: UnderSounds - Servicio Contenidos
   version: 1.0.0
@@ -118,7 +118,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: 'schemas/Error.yaml'  
+                $ref: 'schemas/Error.yaml'
 
     post:
       tags:
