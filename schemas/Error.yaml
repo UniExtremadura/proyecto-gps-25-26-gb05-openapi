@@ -1,11 +1,11 @@
 type: object
-required:
-  - code
-  - message
+description: Error.
 properties:
   code:
     type: string
+    description: Código.
     example: ERR-1
   message:
     type: string
-    example: Error.
+    description: Explicación.
+    example: "Faltan los siguientes campos obligatorios: id, role."

@@ -1,37 +1,34 @@
 type: object
+description: Usuario.
 properties:
-    id:
-      type: integer
-      format: int64
-      example: 10
-    userId:
-      type: integer
-      format: int64
-      example: 198772
-    firstName:
-      type: string
-      description: User's First Name
-      example: John
-    lastName:
-      type: string
-      description: User's Last Name
-      example: Smith
-    username:
-      type: string
-      description: User's Public Name in the platform
-      example: theUser
-    email:
-      type: string
-      example: johnsmith@email.com
-    role:
-      type: string
-      description: Permits of the user
-      example: admin
-      enum:
-        - admin
-        - artist
-        - user
-    #array de direcciones de envio
-      
-xml:
-    name: user
+  id:
+    type: string
+    format: uuid
+    description: Identificador.
+    example: acde070d-8c4c-4f0d-9d8a-162843c10333
+  firstName:
+    type: string
+    description: Nombre.
+    example: John
+  lastName:
+    type: string
+    description: Apellidos.
+    example: Smith
+  email:
+    type: string
+    format: email
+    description: Correo electrónico.
+    example: johnsmith@email.com
+  role:
+    type: string
+    description: Rol.
+    example: admin
+    enum:
+      - admin
+      - artist
+      - user
+  addressBook:
+    type: array
+    description: Lista de direcciones de envío guardadas.
+    items:
+      $ref: 'Address.yaml'
