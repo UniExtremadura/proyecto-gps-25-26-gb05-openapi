@@ -104,6 +104,26 @@ paths:
           schema:
             type: integer
             format: int64
+        - name: orderBy
+          in: query
+          description: Criterio de orden de los elementos (por defecto, fecha de lanzamiento).
+          required: false
+          schema:
+            type: string
+            enum:
+              - releaseDate
+              - price
+              - artist
+              - rating
+        - name: orderDirection
+          in: query
+          description: Dirección del orden (por defecto, descendente).
+          required: false
+          schema:
+            type: string
+            enum:
+              - asc
+              - desc
       responses:
         '200':
           description: Canciones obtenidas con éxito.
@@ -418,7 +438,7 @@ paths:
       description: Devuelve un listado de álbumes según los filtros especificados.
       operationId: getAlbums
       parameters:
-        - name: name
+        - name: title
           in: query
           description: Nombre parcial del álbum.
           required: false
@@ -478,6 +498,26 @@ paths:
           schema:
             type: integer
             format: int64
+        - name: orderBy
+          in: query
+          description: Criterio de orden de los elementos (por defecto, fecha de lanzamiento).
+          required: false
+          schema:
+            type: string
+            enum:
+              - releaseDate
+              - artist
+              - price
+              - rating
+        - name: orderDirection
+          in: query
+          description: Dirección del orden (por defecto, descendente).
+          required: false
+          schema:
+            type: string
+            enum:
+              - asc
+              - desc
       responses:
         '200':
           description: Álbumes obtenidos con éxito.
