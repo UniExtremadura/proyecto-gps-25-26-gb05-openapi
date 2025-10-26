@@ -44,9 +44,9 @@ paths:
       description: Devuelve un listado de canciones según los filtros especificados.
       operationId: getSongs
       parameters:
-        - name: name
+        - name: title
           in: query
-          description: Nombre parcial de la canción.
+          description: Título parcial de la canción.
           required: false
           schema: 
             type: string
@@ -1673,4 +1673,3 @@ components:
       type: http
       scheme: bearer
       bearerFormat: JWT
-        

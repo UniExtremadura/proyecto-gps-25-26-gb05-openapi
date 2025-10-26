@@ -1,461 +1,270 @@
 openapi: 3.0.1
 info:
-  title: Servidor Tienda bandCamp by UnderSounds - OpenAPI 3.0
+  title: UnderSounds - Servicio Compras
+  version: 1.0.0
   description: |-
     Especificación OpenAPI para el servicio de compras de UnderSounds.
-  version: 1.0.0
 servers:
-  - url: https://petstore3.swagger.io/api/v3
+  - url: https://www.undersounds.com/api/v1/compras
 tags:
-  - name: sales
-    description: Todo sobre las ventas
-  - name: payment
-    description: Todo sobre el proceso de pago
+  - name: orders
+    description: Operaciones sobre pedidos
+  - name: webhooks
+    description: Webhooks para comunicación con servicios de terceros
 paths:
-  /sales:
+  /orders:
     get:
       tags:
-        - sales
-      summary: Obtener todas las ventas de la tienda o filtrar por usuario.
-      description: Devuelve un arreglo de todas las ventas, o solo las del usuario indicado mediante el parámetro userId.
-      operationId: getSales
-      parameters:
-      - name: userId
-        in: query
-        description: ID del usuario para filtrar sus compras.
-        required: false
-        schema:
-          type: string
-          example: "23"
-      responses:
-        '200':
-          description: Operación exitosa
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: 'schemas/Sale.yaml'
-            application/xml:
-              schema:
-                type: array
-                items:
-                  $ref: 'schemas/Sale.yaml'
-        '400':
-          description: Parámetro inválido
-          content:
-            application/json:
-              schema:
-                $ref: "schemas/Error.yaml"
-        default:
-          description: Error inesperado
-          content:
-            application/json:
-              schema:
-                $ref: "schemas/Error.yaml"
-    put:
-      tags:
-        - sales
-      summary: Actualizar una venta.
-      description: Actualiza una venta existente por su ID.
-      operationId: updateSale
-      requestBody:
-        description: Actualiza una venta existente en la tienda
-        content:
-          application/json:
-            schema:
-              $ref: 'schemas/Sale.yaml'
-          application/xml:
-            schema:
-              $ref: 'schemas/Sale.yaml'
-          application/x-www-form-urlencoded:
-            schema:
-              $ref: 'schemas/Sale.yaml'
-        required: true
-      responses:
-        '200':
-          description: Operación exitosa
-          content:
-            application/json:
-              schema:
-                $ref: 'schemas/Sale.yaml'
-            application/xml:
-              schema:
-                $ref: 'schemas/Sale.yaml'
-        '400':
-          description: ID inválido
-        '404':
-          description: Venta no encontrada
-        '422':
-          description: Excepción de validación
-        default:
-          description: Error inesperado
-          content:
-            application/json:
-              schema:
-                $ref: "schemas/Error.yaml"
-    post:
-      tags:
-        - sales
-      summary: Procesa una nueva venta en la tienda.
-      description: Añade una nueva venta a la tienda.
-      operationId: addSale
-      requestBody:
-        description: Crea una nueva venta en la tienda
-        content:
-          application/json:
-            schema:
-              $ref: 'schemas/Sale.yaml'
-          application/xml:
-            schema:
-              $ref: 'schemas/Sale.yaml'
-          application/x-www-form-urlencoded:
-            schema:
-              $ref: 'schemas/Sale.yaml'
-        required: true
-      responses:
-        '200':
-          description: Operación exitosa
-          content:
-            application/json:
-              schema:
-                $ref: 'schemas/Sale.yaml'
-            application/xml:
-              schema:
-                $ref: 'schemas/Sale.yaml'
-        '400':
-          description: Actualización inválida
-        '422':
-          description: Excepción de validación
-        default:
-          description: Error inesperado
-          content:
-            application/json:
-              schema:
-                $ref: "schemas/Error.yaml"
-  /sales/{saleId}:
-    get:
-      tags:
-        - sales
-      summary: Buscar una venta por ID.
-      description: Devuelve una sola venta.
-      operationId: getSaleById
-      parameters:
-        - name: saleId
-          in: path
-          description: ID de la venta a devolver
-          required: true
-          schema:
-            type: integer
-            format: int64
-      responses:
-        '200':
-          description: Operación exitosa
-          content:
-            application/json:
-              schema:
-                $ref: 'schemas/Sale.yaml'
-            application/xml:
-              schema:
-                $ref: 'schemas/Sale.yaml'
-        '400':
-          description: ID inválido
-        '404':
-          description: Venta no encontrada
-        default:
-          description: Error inesperado
-          content:
-            application/json:
-              schema:
-                $ref: "schemas/Error.yaml"
+        - orders
+      summary: Obtener pedidos.
+      description: Devuelve un listado de pedidos según los filtros especificados.
+      operationId: getOrders
       security:
-        - api_key: []
-    delete:
-      tags:
-        - sales
-      summary: Elimina una venta.
-      description: Elimina una venta.
-      operationId: deleteSale
+        - bearerAuth: []
       parameters:
-        - name: api_key
-          in: header
-          description: ''
+        - name: userId
+          in: query
+          description: Identificador del usuario comprador.
           required: false
           schema:
             type: string
-        - name: saleId
-          in: path
-          description: ID de la venta a eliminar
-          required: true
+            format: uuid
+        - name: minCreationDate
+          in: query
+          description: Fecha mínima de creación.
+          required: false
+          schema:
+            type: string
+            format: date-time
+        - name: maxCreationDate
+          in: query
+          description: Fecha máxima de creación.
+          required: false
+          schema:
+            type: string
+            format: date-time
+        - name: minTotal
+          in: query
+          description: Precio total mínimo en céntimos.
+          required: false
           schema:
             type: integer
             format: int64
-      responses:
-        '200':
-          description: Venta eliminada
-        '400':
-          description: Valor de venta inválido
-        default:
-          description: Error inesperado
-          content:
-            application/json:
-              schema:
-                $ref: "schemas/Error.yaml"
-  /sales/access:
-    get:
-      tags:
-        - sales
-      summary: Obtener los contenidos a los que tiene acceso el usuario.
-      description: Devuelve todos los contenidos que ha comprado el usuario y a los que tiene acceso.
-      operationId: getUserAccess
-      parameters:
-        - name: userId
+        - name: maxTotal
           in: query
-          description: ID del usuario para obtener sus accesos.
-          required: true
+          description: Precio total máximo en céntimos.
+          required: false
+          schema:
+            type: integer
+            format: int64
+        - name: status
+          in: query
+          description: Estado del pedido.
           schema:
             type: string
-            example: "23"
+            enum:
+              - pending
+              - paid
+              - shipped
+              - delivered
+              - cancelled
+        - name: page
+          in: query
+          description: Número de página (por defecto, 1).
+          required: false
+          schema:
+            type: integer
+            format: int64
+        - name: items
+          in: query
+          description: Número de elementos por página (por defecto, 20; máximo 100).
+          required: false
+          schema:
+            type: integer
+            format: int64
+        - name: orderBy
+          in: query
+          description: Criterio de orden de los elementos (por defecto, fecha de creación).
+          required: false
+          schema: 
+            type: string
+            enum:
+              - creationDate
+              - userId
+              - total
+        - name: orderDirection
+          in: query
+          description: Dirección del orden (por defecto, descendente).
+          required: false
+          schema:
+            type: string
+            enum:
+              - asc
+              - desc
       responses:
         '200':
-          description: Operación exitosa.
+          description: Pedidos obtenidos con éxito.
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: "schemas/AccessItem.yaml"
-            application/xml:
-              schema:
-                type: array
-                items:
-                  $ref: "schemas/AccessItem.yaml"
-        '404':
-          description: Usuario no encontrado o sin compras registradas.
-        default:
-          description: Error inesperado
+                  $ref: 'schemas/Order.yaml'
+        '401':
+          description: Usuario sin permiso para ver los pedidos.
           content:
             application/json:
               schema:
-                $ref: "schemas/Error.yaml"
-  /sales/verifyAccess:
+                $ref: 'schemas/Error.yaml'
+        '500':
+          description: Error interno.
+          content:
+            application/json:
+              schema:
+                $ref: 'schemas/Error.yaml'
+    post:
+      tags:
+        - orders
+      summary: Crear un nuevo pedido.
+      description: Crea un nuevo pedido para el usuario autenticado.
+      operationId: postOrder
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: 'schemas/Order.yaml'
+      responses:
+        '201':
+          description: Pedido creado con éxito.
+          content:
+            application/json:
+              schema:
+                $ref: 'schemas/Order.yaml'
+        '400':
+          description: Información inválida o incompleta.
+          content:
+            application/json:
+              schema:
+                $ref: 'schemas/Error.yaml'
+        '401':
+          description: Usuario sin permiso para crear un pedido.
+          content:
+            application/json:
+              schema:
+                $ref: 'schemas/Error.yaml'
+        '500':
+          description: Error interno.
+          content:
+            application/json:
+              schema:
+                $ref: 'schemas/Error.yaml'
+
+  /orders/{id}:
     get:
       tags:
-        - sales
-      summary: Verificar si un usuario tiene acceso a un contenido.
-      description: Comprueba si el usuario tiene derecho a reproducir un contenido específico.
-      operationId: verifyAccess
+        - orders
+      summary: Obtener un pedido por su ID.
+      description: Devuelve la información del pedido solicitado.
+      operationId: getOrderById
+      security:
+        - bearerAuth: []
       parameters:
-        - name: userId
-          in: query
-          description: ID del usuario para verificar sus accesos.
+        - name: id
+          in: path
+          description: ID del pedido a devolver.
           required: true
           schema:
             type: string
-            example: "23"
-        - name: productId
-          in: query
-          description: ID del producto que se quiere verificar.
-          required: true
-          schema:
-            type: string
-            example: "45"
+            format: uuid
       responses:
         '200':
-          description: Operación exitosa.
+          description: Pedido recuperado con éxito.
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  hasAccess:
-                    type: boolean
-                    example: true
-            application/xml:
+                $ref: 'schemas/Order.yaml'
+        '401':
+          description: Usuario sin permiso para ver el pedido.
+          content:
+            application/json:
               schema:
-                type: object
-                properties:
-                  hasAccess:
-                    type: boolean
-                    example: true
+                $ref: 'schemas/Error.yaml'
         '404':
-          description: Usuario o contenido no encontrado.
-        default:
-          description: Error inesperado
+          description: Pedido no encontrado.
+        '500':
+          description: Error interno.
           content:
             application/json:
               schema:
-                $ref: "schemas/Error.yaml"
-  /payment:
+                $ref: 'schemas/Error.yaml'
+  
+  /webhooks/stripe:
     post:
       tags:
-        - payment
-      summary: Iniciar el proceso de pago.
-      description: Crea una sesión en la plataforma de pagos para procesar una compra existente.
-      operationId: startPayment
+        - webhooks
+      summary: Webhook para eventos de Stripe.
+      description: Endpoint establecido como webhook en la API de Stripe.
+      operationId: stripeWebhook
+      parameters:
+        - name: stripe-signature
+          description: Firma de Stripe para validar el origen de la llamada.
+          in: header
+          schema:
+            type: string
+          required: true
       requestBody:
-        description: Información necesaria de la pasarela de pagos
+        required: true
         content:
           application/json:
             schema:
               type: object
               properties:
-                saleId:
-                  type: integer
-                  format: int64
-                  description: ID de la compra a pagar.
-                  example: 23
-                method:
+                id:
                   type: string
-                  description: Método de pago seleccionado.
-                  enum: [debito, credito, bizum, paypal]
-                  example: "paypal"
-          application/xml:
-            schema:
-              type: object
-              properties:
-                saleId:
-                  type: integer
-                  format: int64
-                  description: ID de la compra a pagar.
-                  example: 23
-                method:
+                  description: ID del evento de Stripe
+                type:
                   type: string
-                  description: Método de pago seleccionado.
-                  enum: [debito, credito, bizum, paypal]
-                  example: "paypal"
-          application/x-www-form-urlencoded:
-            schema:
-              type: object
-              properties:
-                saleId:
-                  type: integer
-                  format: int64
-                  description: ID de la compra a pagar.
-                  example: 23
-                method:
-                  type: string
-                  description: Método de pago seleccionado.
-                  enum: [debito, credito, bizum, paypal]
-                  example: "paypal"
-        required: true
+                  description: Tipo de evento de Stripe
+                  example: checkout.session.completed
+                data:
+                  type: object
+                  properties:
+                    object:
+                      type: object
+                      description: Objeto del evento (PaymentIntent)
       responses:
         '200':
-          description: Operación exitosa
+          description: Evento procesado con éxito.
           content:
             application/json:
               schema:
                 type: object
                 properties:
-                  paymentSessionURL:
-                    type: string
-                    description: URL para redirigir al usuario a la pasarela de pago.
-            application/xml:
+                  received:
+                    type: boolean
+                    example: true
+        '400':
+          description: Error de validación de firma.
+          content:
+            application/json:
               schema:
                 type: object
                 properties:
-                  paymentSessionURL:
+                  error:
                     type: string
-                    description: URL para redirigir al usuario a la pasarela de pago.
-        '400':
-          description: Datos inválidos o compra no encontrada.
-        default:
-          description: Error inesperado
+        '500':
+          description: Error interno.
           content:
             application/json:
               schema:
-                $ref: "schemas/Error.yaml"
-  /payment/notification:
-    post:
-      tags:
-        - payment
-      summary: Recibir notificaciones de la pasarela de pagos.
-      description: Recibi una respuesta por parte de la pasarela de pagos para actualizar el estado de la compra.
-      operationId: notificationPayment
-      requestBody:
-        description: Envía información sobre la transacción de la pasarela de pagos.
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                eventType:
-                  type: string
-                  description: Resultado del proceso de pago.
-                  enum:
-                    - exitoso
-                    - error
-                saleId:
-                  type: integer
-                  format: int64
-                  example: 23
-                transactionId:
-                  type: integer
-                  format: int64
-                  example: 11
-                amount:
-                  type: number
-                  format: float
-                  example: 19.99
-          application/xml:
-            schema:
-              type: object
-              properties:
-                eventType:
-                  type: string
-                  description: Resultado del proceso de pago.
-                  enum:
-                    - exitoso
-                    - error
-                saleId:
-                  type: integer
-                  format: int64
-                  example: 23
-                transactionId:
-                  type: integer
-                  format: int64
-                  example: 11
-                amount:
-                  type: number
-                  format: float
-                  example: 19.99
-          application/x-www-form-urlencoded:
-            schema:
-              type: object
-              properties:
-                eventType:
-                  type: string
-                  description: Resultado del proceso de pago.
-                  enum:
-                    - exitoso
-                    - error
-                saleId:
-                  type: integer
-                  format: int64
-                  example: 23
-                transactionId:
-                  type: integer
-                  format: int64
-                  example: 11
-                amount:
-                  type: number
-                  format: float
-                  example: 19.99
-        required: true
-      responses:
-        '200':
-          description: Pago procesado correctamente.
-        '400':
-          description: Datos inválidos o proceso de pago desconocido.
-        default:
-          description: Error inesperado
-          content:
-            application/json:
-              schema:
-                $ref: "schemas/Error.yaml"
+                $ref: 'schemas/Error.yaml'
+
 components:
   securitySchemes:
-    api_key:
-      type: apiKey
-      name: api_key
-      in: header
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
